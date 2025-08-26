@@ -666,6 +666,14 @@ def chat_formatter_to_chat_completion_handler(
                     llama_grammar.JSON_GBNF, verbose=llama.verbose
                 )
 
+        if tool is None and tool_choice == "auto":
+            assert len(tools) == 1
+            tool = tools[0]
+            schema = tool["function"]["parameters"]
+            grammar = llama_grammar.LlamaGrammar.from_json_schema(
+                json.dumps(schema), verbose=llama.verbose
+            )
+
         completion_or_chunks = llama.create_completion(
             prompt=prompt,
             temperature=temperature,
